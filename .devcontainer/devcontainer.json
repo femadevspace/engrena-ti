@@ -1,0 +1,84 @@
+{
+  "name": "Next.js (pnpm)",
+  "build": { "dockerfile": "Dockerfile" },
+  "remoteUser": "node",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Next.js App",
+      "onAutoForward": "openBrowser"
+    }
+  },
+
+  "features": {
+    "ghcr.io/nils-geistmann/devcontainers-features/zsh:0": {
+      "setLocale": true,
+      "theme": "robbyrussell",
+      "plugins": "git docker",
+      "desiredLocale": "en_US.UTF-8 UTF-8"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {
+          "zsh": {
+            "path": "/bin/zsh"
+          }
+        },
+
+        // ==================================================================================
+        // Material Icon Theme settings
+        // ==================================================================================
+        "workbench.iconTheme": "material-icon-theme",
+        "material-icon-theme.folders.associations": {
+          /* 1)       */ "domain": "core",
+          /* 1.1)     */ "entities": "class",
+          /* 1.2)     */ "exceptions": "error",
+          /* 1.2)     */ "value-objects": "constant",
+
+          /* 2)       */ "application": "app",
+          /* 2.1)     */ "usecases": "job",
+          /* 2.2)     */ "gateways": "interface",
+
+          /* 3)       */ "infrastructure": "environment",
+          /* 3.1)     */ "adapters": "plugin",
+          /* 3.1.1)   */ "http": "api",
+          /* 3.2)     */ "persistence": "database",
+          /* 3.2.n.1) */ "mappers": "mappings"
+        },
+        "material-icon-theme.files.associations": {
+          "index.ts": "search"
+        },
+        "material-icon-theme.activeIconPack": "react"
+      },
+
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "PKief.material-icon-theme",
+        "vivaxy.vscode-conventional-commits",
+        "kamikillerto.vscode-colorize",
+        "DavidAnson.vscode-markdownlint",
+        "Cardinal90.multi-cursor-case-preserve",
+        "christian-kohler.path-intellisense",
+        "rvest.vs-code-prettier-eslint",
+        "MylesMurphy.prettify-ts",
+        "YoavBls.pretty-ts-errors",
+        "bradlc.vscode-tailwindcss",
+        "esdete.tailwind-rainbow",
+        "meganrogge.template-string-converter",
+        "aaron-bond.better-comments",
+        "EditorConfig.EditorConfig"
+      ]
+    }
+  },
+
+  "mounts": [
+    "source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
+    "source=${localWorkspaceFolderBasename}-pnpm-store,target=${containerWorkspaceFolder}/.pnpm-store,type=volume"
+  ],
+
+  "postCreateCommand": "sudo chown -R node:node ${containerWorkspaceFolder}/node_modules ${containerWorkspaceFolder}/.pnpm-store && pnpm install"
+}
