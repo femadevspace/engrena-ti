@@ -1,4 +1,4 @@
-import { BenefitsSection, ContactSection, FAQSection, HeroSection, JourneySection } from "~/components/layout/home";
+import { BenefitsSection, ContactSection, FAQSection, FooterSection, HeroSection, JourneySection } from "~/components/layout/home";
 
 export default function HomePage() {
   return (
@@ -8,6 +8,7 @@ export default function HomePage() {
       <JourneySection />
       <FAQSection />
       <ContactSection />
+      <FooterSection />
     </main>
   );
 }

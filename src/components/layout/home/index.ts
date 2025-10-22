@@ -3,3 +3,4 @@ export * from "./benefits-section";
 export * from "./journey-section";
 export * from "./faq-section";
 export * from "./contact-section";
+export * from "./footer-section";
