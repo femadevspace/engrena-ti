@@ -2,6 +2,8 @@ import "~/styles/globals.css";
 
 import { type Metadata } from "next";
 
+import { cn } from "~/lib/class-name";
+import { fira, inter } from "~/styles/fonts";
 import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata: Metadata = {
@@ -14,7 +16,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-br">
+    <html lang="pt-br" className={cn([fira.variable, inter.variable])}>
       <body>
         <TRPCReactProvider>{children}</TRPCReactProvider>
       </body>
