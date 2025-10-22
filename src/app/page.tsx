@@ -1,4 +1,4 @@
-import { BenefitsSection, HeroSection, JourneySection } from "~/components/layout/home";
+import { BenefitsSection, FAQSection, HeroSection, JourneySection } from "~/components/layout/home";
 
 export default function HomePage() {
   return (
@@ -6,6 +6,7 @@ export default function HomePage() {
       <HeroSection />
       <BenefitsSection />
       <JourneySection />
+      <FAQSection />
     </main>
   );
 }
