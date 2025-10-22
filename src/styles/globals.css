@@ -14,3 +14,20 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-mono: var(--font-fira-code), ui-monospace, SFMono-Regular, monospace;
 }
+
+@layer base {
+  body {
+    @apply bg-background text-foreground min-h-screen;
+  }
+  h1 {
+    @apply font-mono text-4xl font-bold;
+  }
+
+  h2 {
+    @apply font-mono text-2xl font-bold;
+  }
+
+  p {
+    @apply font-sans text-xl font-normal;
+  }
+}
