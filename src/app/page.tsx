@@ -1,4 +1,11 @@
-import { BenefitsSection, ContactSection, FAQSection, FooterSection, HeroSection, JourneySection } from "~/components/layout/home";
+import {
+  BenefitsSection,
+  ContactSection,
+  FAQSection,
+  FooterSection,
+  HeroSection,
+  JourneySection,
+} from "~/components/layout/home";
 
 export default function HomePage() {
   return (
