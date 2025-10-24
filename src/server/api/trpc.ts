@@ -6,10 +6,11 @@
  * TL;DR - Aqui é onde toda a configuração do servidor tRPC é criada e conectada. As partes que você
  * precisará usar estão documentadas adequadamente perto do final.
  */
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
+import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 
 /**
@@ -25,8 +26,11 @@ import { db } from "~/server/db";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
+  const session = await auth();
+
   return {
     db,
+    session,
     ...opts,
   };
 };
@@ -85,4 +89,17 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 });
 
 export const publicProcedure = t.procedure.use(timingMiddleware);
-// TODO: Adicionar procedures privadas/autenticadas (ou de "admin-only")
+
+export const adminProcedure = t.procedure
+  .use(timingMiddleware)
+  .use(async ({ ctx, next }) => {
+    if (!ctx.session?.user) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+    return next({
+      ctx: {
+        ...ctx,
+        // Garante que a sessão e o usuário não são nulos daqui para frente
+        session: { ...ctx.session, user: ctx.session.user },
+      },
+    });
+  });
