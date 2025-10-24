@@ -8,6 +8,7 @@
   --color-accent: oklab(72.218% 0.10087 0.13836);
   --color-highlight: oklab(42.288% -0.03287 -0.11337);
   --color-muted: oklab(71.366% -0.00289 -0.01904);
+  --color-destructive: oklab(69.2051% 0.17505 0.08666);
 
   --font-sans:
     var(--font-inter), ui-sans-serif, system-ui, sans-serif,
