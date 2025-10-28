@@ -38,7 +38,7 @@ export function JourneySection() {
 export function JourneySteps() {
   return (
     <div className="relative w-full">
-      <div className="bg-muted/30 absolute left-1/2 h-full w-0.5 -translate-x-1/2" />
+      <div className="bg-border absolute left-1/2 h-full w-0.5 -translate-x-1/2" />
       <div className="space-y-12">
         {journeySteps.map(({ week, title }, index) => {
           const isEven = index % 2 === 0;
