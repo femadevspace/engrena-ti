@@ -3,6 +3,7 @@ import {
   ContactSection,
   FAQSection,
   FooterSection,
+  Header,
   HeroSection,
   JourneySection,
 } from "~/components/layout/home";
@@ -10,6 +11,7 @@ import {
 export default function HomePage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
+      <Header />
       <HeroSection />
       <BenefitsSection />
       <JourneySection />
