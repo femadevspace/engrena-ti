@@ -17,6 +17,8 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      nickname: string;
+      fullName: string;
     } & DefaultSession["user"];
   }
 }
@@ -24,10 +26,10 @@ declare module "next-auth" {
 export const authConfig = {
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      name: "credentials",
 
       credentials: {
-        name: { label: "Nome de usuário", type: "text" },
+        nickname: { label: "Nome de usuário", type: "text" },
         password: { label: "Senha", type: "password" },
       },
 
@@ -35,7 +37,7 @@ export const authConfig = {
         if (!credentials) return null;
 
         const user = await db.query.adminUsers.findFirst({
-          where: eq(adminUsers.name, credentials.name as string),
+          where: eq(adminUsers.nickname, credentials.nickname as string),
         });
 
         if (!user) return null;
@@ -46,7 +48,11 @@ export const authConfig = {
         );
 
         if (!isPasswordCorrect) return null;
-        return { id: user.id, name: user.name };
+        return {
+          id: user.id,
+          nickname: user.nickname,
+          fullName: user.fullName,
+        };
       },
     }),
   ],
