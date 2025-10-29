@@ -13,6 +13,9 @@ const navItems: NavItem[] = [
   { id: "contact", label: "Contate-nos" },
 ] as const;
 
+const navItemClassName =
+  "font-bold text-white uppercase transition-colors duration-200";
+
 export function Header() {
   const { activeSection, headerRef, scrollToSection, hasScrolled } =
     useHeaderScrollSpy(navItems, navItems[0]!.id);
@@ -34,7 +37,7 @@ export function Header() {
                   href={`#${item.id}`}
                   onClick={(e) => scrollToSection(e, item.id)}
                   className={cn(
-                    "font-bold text-white uppercase transition-colors duration-200",
+                    navItemClassName,
                     activeSection === item.id && "text-accent",
                   )}
                 >
@@ -44,10 +47,7 @@ export function Header() {
             ))}
 
             <li>
-              <NextLink
-                href={"/aulas"}
-                className="font-bold text-white uppercase transition-colors duration-200"
-              >
+              <NextLink href={"/aulas"} className={navItemClassName}>
                 Aulas
               </NextLink>
             </li>
