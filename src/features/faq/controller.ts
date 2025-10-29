@@ -90,4 +90,14 @@ export const faqRouter = createTRPCRouter({
 
       return { success: true, message: "FAQ atualizada com sucesso!" };
     }),
+
+  delete: adminProcedure
+    .input(z.string().uuid())
+    .mutation(async ({ input, ctx }) => {
+      await ctx.db
+        .delete(frequentlyAskedQuestions)
+        .where(eq(frequentlyAskedQuestions.id, input));
+
+      return { success: true, message: "FAQ deletada com sucesso!" };
+    }),
 });
