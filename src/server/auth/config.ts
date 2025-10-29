@@ -14,6 +14,11 @@ import { adminUsers } from "../db/schema";
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
 declare module "next-auth" {
+  interface User {
+    nickname: string;
+    fullName: string;
+  }
+
   interface Session extends DefaultSession {
     user: {
       id: string;
@@ -59,7 +64,11 @@ export const authConfig = {
 
   callbacks: {
     jwt({ token, user }) {
-      if (user) token.id = user.id;
+      if (user) {
+        token.id = user.id;
+        token.nickname = user.nickname;
+        token.fullName = user.fullName;
+      }
       return token;
     },
 
@@ -68,6 +77,8 @@ export const authConfig = {
       user: {
         ...session.user,
         id: token.id as string,
+        nickname: token.nickname as string,
+        fullName: token.fullName as string,
       },
     }),
   },
