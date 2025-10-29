@@ -1,4 +1,4 @@
-import { asc, inArray, sql, type SQL } from "drizzle-orm";
+import { asc, eq, inArray, sql, type SQL } from "drizzle-orm";
 import z from "zod";
 import {
   adminProcedure,
@@ -66,5 +66,28 @@ export const faqRouter = createTRPCRouter({
         .where(inArray(frequentlyAskedQuestions.id, input));
 
       return { success: true, message: "Ordem atualizada com sucesso!" };
+    }),
+
+  update: adminProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        question: z.string().nonempty(),
+        answer: z.string().nonempty(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const adminId = ctx.session.user.id;
+
+      await ctx.db
+        .update(frequentlyAskedQuestions)
+        .set({
+          question: input.question,
+          answer: input.answer,
+          updatedByAdminId: adminId,
+        })
+        .where(eq(frequentlyAskedQuestions.id, input.id));
+
+      return { success: true, message: "FAQ atualizada com sucesso!" };
     }),
 });
