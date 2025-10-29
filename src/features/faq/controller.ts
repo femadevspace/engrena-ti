@@ -1,5 +1,6 @@
 import { asc, eq, inArray, sql, type SQL } from "drizzle-orm";
 import z from "zod";
+
 import {
   adminProcedure,
   createTRPCRouter,
@@ -31,13 +32,13 @@ export const faqRouter = createTRPCRouter({
   list: publicProcedure.query(async ({ ctx }) => {
     const faqs = await ctx.db.query.frequentlyAskedQuestions.findMany({
       orderBy: (faq) => [asc(faq.order), asc(faq.updatedAt)],
+      columns: {
+        question: true,
+        answer: true,
+      },
     });
 
-    // Omite campos desnecessários para o cliente
-    return faqs.map(({ question, answer }) => ({
-      question,
-      answer,
-    }));
+    return faqs;
   }),
 
   reorder: adminProcedure
