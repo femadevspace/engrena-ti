@@ -1,4 +1,4 @@
-import { asc } from "drizzle-orm";
+import { asc, inArray, sql, type SQL } from "drizzle-orm";
 import z from "zod";
 import {
   adminProcedure,
@@ -39,4 +39,32 @@ export const faqRouter = createTRPCRouter({
       answer,
     }));
   }),
+
+  reorder: adminProcedure
+    .input(z.array(z.string().uuid()).nonempty())
+    .mutation(async ({ input, ctx }) => {
+      const adminId = ctx.session.user.id;
+
+      const sqlChunks: SQL[] = [sql`(case`];
+      input.forEach((faqId, index) =>
+        sqlChunks.push(
+          sql`when ${frequentlyAskedQuestions.id} = ${faqId} then ${index}`,
+        ),
+      );
+      sqlChunks.push(sql`end)`);
+
+      await ctx.db
+        .update(frequentlyAskedQuestions)
+        .set({
+          /**
+           * Atualiza a ordem das FAQs utilizando uma única request ao banco de dados.
+           * @see https://orm.drizzle.team/docs/guides/update-many-with-different-value
+           */
+          order: sql.join(sqlChunks, sql.raw(" ")),
+          updatedByAdminId: adminId,
+        })
+        .where(inArray(frequentlyAskedQuestions.id, input));
+
+      return { success: true, message: "Ordem atualizada com sucesso!" };
+    }),
 });
