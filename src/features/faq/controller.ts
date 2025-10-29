@@ -32,10 +32,6 @@ export const faqRouter = createTRPCRouter({
   list: publicProcedure.query(async ({ ctx }) => {
     const faqs = await ctx.db.query.frequentlyAskedQuestions.findMany({
       orderBy: (faq) => [asc(faq.order), asc(faq.updatedAt)],
-      columns: {
-        question: true,
-        answer: true,
-      },
     });
 
     return faqs;
