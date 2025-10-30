@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { appSchema, baseSchema } from "~/server/db/base";
-import { adminUsers } from "../admin/models";
+import { adminUsers, type AdminUser } from "../admin/models";
 
 export const frequentlyAskedQuestions = appSchema.table("faq", (d) => ({
   ...baseSchema,
@@ -18,6 +18,11 @@ export const frequentlyAskedQuestions = appSchema.table("faq", (d) => ({
 
 export type FrequentlyAskedQuestion =
   typeof frequentlyAskedQuestions.$inferSelect;
+
+export type FrequentlyAskedQuestionAdminInfo = FrequentlyAskedQuestion & {
+  createdByAdmin: AdminUser | null;
+  updatedByAdmin: AdminUser | null;
+};
 
 export const frequentlyAskedQuestionsRelations = relations(
   frequentlyAskedQuestions,
