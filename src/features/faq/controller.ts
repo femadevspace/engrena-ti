@@ -37,6 +37,18 @@ export const faqRouter = createTRPCRouter({
     return faqs;
   }),
 
+  listWithAdminInfo: adminProcedure.query(async ({ ctx }) => {
+    const faqs = await ctx.db.query.frequentlyAskedQuestions.findMany({
+      orderBy: (faq) => [asc(faq.order), asc(faq.updatedAt)],
+      with: {
+        createdByAdmin: true,
+        updatedByAdmin: true,
+      },
+    });
+
+    return faqs;
+  }),
+
   reorder: adminProcedure
     .input(z.array(z.string().uuid()).nonempty())
     .mutation(async ({ input, ctx }) => {
