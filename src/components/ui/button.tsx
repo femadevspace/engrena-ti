@@ -8,11 +8,11 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-highlight hover:bg-muted",
-        primary: "bg-accent hover:bg-muted",
+        default: "bg-highlight hover:bg-highlight/60",
+        primary: "bg-accent/90 hover:bg-accent/70",
         destructive:
-          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
-        ghost: "hover:bg-muted",
+          "bg-destructive/60 text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
+        ghost: "hover:bg-muted/80",
         link: "underline-offset-4 hover:underline px-0!",
       },
       size: {
@@ -22,7 +22,8 @@ const buttonVariants = cva(
       },
     },
     compoundVariants: [
-      { variant: "link", size: "icon", className: "hover:bg-muted" },
+      { variant: "link", size: "icon", className: "hover:bg-highlight" },
+      { variant: "ghost", size: "icon", className: "hover:bg-highlight" },
     ],
     defaultVariants: {
       variant: "default",
