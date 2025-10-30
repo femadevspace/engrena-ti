@@ -9,10 +9,10 @@ export const frequentlyAskedQuestions = appSchema.table("faq", (d) => ({
   answer: d.text("answer").notNull(),
 
   createdByAdminId: d
-    .uuid()
+    .uuid("createdByAdminId")
     .references(() => adminUsers.id, { onDelete: "set null" }),
   updatedByAdminId: d
-    .uuid()
+    .uuid("updatedByAdminId")
     .references(() => adminUsers.id, { onDelete: "set null" }),
 }));
 
