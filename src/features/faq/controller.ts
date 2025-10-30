@@ -1,4 +1,4 @@
-import { asc, eq, inArray, sql, type SQL } from "drizzle-orm";
+import { asc, eq, inArray, sql } from "drizzle-orm";
 import z from "zod";
 
 import {
@@ -54,13 +54,13 @@ export const faqRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const adminId = ctx.session.user.id;
 
-      const sqlChunks: SQL[] = [sql`(case`];
-      input.forEach((faqId, index) =>
-        sqlChunks.push(
-          sql`when ${frequentlyAskedQuestions.id} = ${faqId} then ${index}`,
+      const orderCaseStatement = sql`(case ${sql.join(
+        input.map(
+          (id, index) =>
+            sql`when ${frequentlyAskedQuestions.id} = ${id} then ${index}`,
         ),
-      );
-      sqlChunks.push(sql`end)`);
+        sql` `,
+      )} end)::integer`;
 
       await ctx.db
         .update(frequentlyAskedQuestions)
@@ -69,7 +69,7 @@ export const faqRouter = createTRPCRouter({
            * Atualiza a ordem das FAQs utilizando uma única request ao banco de dados.
            * @see https://orm.drizzle.team/docs/guides/update-many-with-different-value
            */
-          order: sql.join(sqlChunks, sql.raw(" ")),
+          order: orderCaseStatement,
           updatedByAdminId: adminId,
         })
         .where(inArray(frequentlyAskedQuestions.id, input));
