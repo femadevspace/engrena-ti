@@ -2,7 +2,13 @@
 
 import { MoreHorizontalIcon, type LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition, type ReactNode } from "react";
+import {
+  useRef,
+  useState,
+  useTransition,
+  type ReactNode,
+  type RefObject,
+} from "react";
 
 import { api } from "~/trpc/react";
 
@@ -35,6 +41,13 @@ type ActionFunction = ({
   utils: ReturnType<typeof api.useUtils>;
   router: ReturnType<typeof useRouter>;
 }) => Promise<{ error: boolean; message?: string }>;
+
+type ActionWrapper = (actionFn: ActionFunction) => void;
+
+type FullActionContentProps = {
+  formRef: RefObject<HTMLFormElement | null>;
+  withinDialog: ActionWrapper;
+};
 
 type ActionBase = {
   id: string;
@@ -73,8 +86,7 @@ type FullAction = ActionBase & {
   modal: {
     title: ReactNode;
     description?: ReactNode;
-    content: ReactNode;
-    onSubmit: ActionFunction;
+    content: (props: FullActionContentProps) => ReactNode;
   };
 };
 
@@ -128,15 +140,23 @@ function ActionButton({
 function ActionDialogContent({
   action,
   isLoading,
-  onConfirm,
+  onConfirm, // apenas para "quick" actions
+  withinDialog, // apenas para "full" actions
 }: {
   action: Action;
   isLoading: boolean;
   onConfirm: () => void;
+  withinDialog: ActionWrapper;
 }) {
+  const formRef = useRef<HTMLFormElement>(null);
+
   switch (action.type) {
     case "full": {
-      const { title, description, content } = action.modal;
+      const {
+        title,
+        description,
+        content: FullActionModalContent,
+      } = action.modal;
       const { icon: SubmitIcon, label: submitLabel, danger } = action;
 
       return (
@@ -148,8 +168,10 @@ function ActionDialogContent({
             )}
           </AlertDialogHeader>
 
-          {/* Renderiza o formulário ou conteúdo interativo */}
-          <div>{content}</div>
+          <FullActionModalContent
+            formRef={formRef}
+            withinDialog={withinDialog}
+          />
 
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
@@ -158,7 +180,7 @@ function ActionDialogContent({
               disabled={isLoading}
               onClick={(e) => {
                 e.preventDefault();
-                onConfirm();
+                formRef.current?.requestSubmit();
               }}
             >
               <LoadingSwap
@@ -292,25 +314,26 @@ function ActionsGroup({
   };
 
   const onDialogConfirm = () => {
-    if (!openedAction || isLoading) return;
-
-    // Dialog de Ação Completa: fecha apenas no sucesso
-    if (openedAction.type === "full") {
-      return handleAction(openedAction, openedAction.modal.onSubmit, {
-        closeOnFinish: false,
-        closeOnSuccessOnly: true,
-      });
-    }
+    if (!openedAction || isLoading || openedAction.type === "full") return;
+    if (!openedAction.requireConfirmation) return;
 
     // Dialog de confirmação: fecha ao finalizar (sucesso ou erro)
-    if (openedAction.type === "quick" && openedAction.requireConfirmation)
-      return handleAction(openedAction, openedAction.onConfirm, {
-        closeOnFinish: true,
-        closeOnSuccessOnly: false,
-      });
+    return handleAction(openedAction, openedAction.onConfirm, {
+      closeOnFinish: true,
+      closeOnSuccessOnly: false,
+    });
   };
 
   const onDialogCancel = () => (isLoading ? null : setOpenedAction(null));
+
+  const withinDialogWrapper: ActionWrapper = (actionFn) => {
+    if (!openedAction) return;
+
+    void handleAction(openedAction, actionFn, {
+      closeOnFinish: false,
+      closeOnSuccessOnly: true,
+    });
+  };
 
   const renderActions = () => {
     if (actions.length <= 2 && !forceDropdownMenu)
@@ -376,6 +399,7 @@ function ActionsGroup({
             action={openedAction}
             isLoading={isLoading}
             onConfirm={onDialogConfirm}
+            withinDialog={withinDialogWrapper}
           />
         )}
       </AlertDialog>
@@ -383,4 +407,4 @@ function ActionsGroup({
   );
 }
 
-export { ActionsGroup, type Action };
+export { ActionsGroup, type Action, type FullActionContentProps };
