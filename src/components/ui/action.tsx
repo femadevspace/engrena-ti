@@ -6,6 +6,7 @@ import { useState, useTransition, type ReactNode } from "react";
 
 import { api } from "~/trpc/react";
 
+import { useIsMobile } from "~/hooks/use-mobile";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -219,12 +220,22 @@ function ActionDialogContent({
 }
 
 // --- Componente Principal --- //
-function ActionsGroup({ actions }: { actions: [Action, ...Action[]] }) {
+function ActionsGroup({
+  actions,
+  forceDropdown,
+}: {
+  actions: [Action, ...Action[]];
+  forceDropdown?: boolean;
+}) {
   const [openedAction, setOpenedAction] = useState<Action | null>(null);
   const [isLoading, startTransition] = useTransition();
   const [loadingActionId, setLoadingActionId] = useState<string | null>(null);
+  const isMobile = useIsMobile();
   const utils = api.useUtils();
   const router = useRouter();
+
+  const forceDropdownMenu =
+    forceDropdown === undefined ? isMobile : !!forceDropdown;
 
   const handleAction = async (
     action: Action,
@@ -302,7 +313,7 @@ function ActionsGroup({ actions }: { actions: [Action, ...Action[]] }) {
   const onDialogCancel = () => (isLoading ? null : setOpenedAction(null));
 
   const renderActions = () => {
-    if (actions.length <= 2)
+    if (actions.length <= 2 && !forceDropdownMenu)
       return (
         <div className="flex items-center gap-2">
           {actions.map((action) => (
